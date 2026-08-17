@@ -1,0 +1,56 @@
+.footer {
+  background-color: #9b0b11; /* Mesma cor da logomarca */
+  color: var(--color-white);
+  padding: 0.5rem 0 1.5rem;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-logo {
+  height: 100px;
+  width: auto;
+  margin-bottom: 0;
+  display: block;
+}
+
+.footer-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-white);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #D1D5DB;
+}
+
+.footer-bottom {
+  border-top: 1px solid #4B5563;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.backoffice-link {
+  color: #9CA3AF;
+  text-decoration: none;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.backoffice-link:hover {
+  opacity: 1;
+}
