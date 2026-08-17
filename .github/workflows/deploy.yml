@@ -76,4 +76,7 @@ jobs:
           }
           EOF
           sudo ln -sf /etc/nginx/sites-available/frango-na-brasa /etc/nginx/sites-enabled/
+          sudo rm -f /etc/nginx/sites-enabled/default
+          sudo chown -R www-data:www-data /var/www/frango-na-brasa/client/dist
+          sudo chmod -R 755 /var/www/frango-na-brasa/client/dist
           sudo systemctl reload nginx
