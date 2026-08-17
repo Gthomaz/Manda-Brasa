@@ -30,10 +30,11 @@ export const Backoffice: React.FC = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
         if (payload.eventType === 'INSERT') {
           toast.success('Novo pedido recebido!', { icon: '🔔', duration: 6000 });
-          setOrders(prev => [payload.new as Order, ...prev]);
+          // Faz um novo fetch para garantir que traz a tabela filha "order_items" que foi inserida logo em seguida
+          fetchOrders();
           playAlertSound();
         } else if (payload.eventType === 'UPDATE') {
-          setOrders(prev => prev.map(order => order.id === payload.new.id ? payload.new as Order : order));
+          fetchOrders(); // Atualiza a lista toda para garantir os itens também
         }
       })
       .subscribe();
@@ -47,7 +48,7 @@ export const Backoffice: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('orders')
-        .select('*')
+        .select('*, order_items(*)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -129,7 +130,18 @@ export const Backoffice: React.FC = () => {
                 <p><strong>Telefone:</strong> {order.customer_phone}</p>
                 <p><strong>Endereço:</strong> {order.delivery_address}</p>
                 <p><strong>Pagamento:</strong> {order.payment_method}</p>
-                <p className="order-total"><strong>Total:</strong> R$ {order.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                
+                <div className="order-items-summary" style={{ marginTop: '0.75rem', marginBottom: '0.75rem', backgroundColor: '#f9fafb', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb' }}>
+                  <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>🍽️ O que preparar:</p>
+                  {order.order_items?.map((item: any) => (
+                    <div key={item.id} style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                      <strong style={{ color: '#ef4444' }}>{item.quantity}x</strong> {item.product_name}
+                      {item.observation && <span style={{ color: '#6b7280', fontStyle: 'italic', display: 'block', paddingLeft: '1.25rem' }}>Obs: {item.observation}</span>}
+                    </div>
+                  ))}
+                </div>
+
+                <p className="order-total"><strong>Total a Cobrar:</strong> R$ {order.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
               </div>
 
               <div className="order-status-control">
