@@ -31,6 +31,11 @@ export const MeusPedidos: React.FC = () => {
 
   useEffect(() => {
     fetchOrders();
+    
+    // Polling a cada 10 segundos como plano B imbatível
+    const intervalId = setInterval(() => {
+      fetchOrders();
+    }, 10000);
 
     const fetchSessionAndSubscribe = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -79,12 +84,14 @@ export const MeusPedidos: React.FC = () => {
         .subscribe();
 
       return () => {
+        clearInterval(intervalId);
         supabase.removeChannel(channel);
       };
     };
 
     const cleanup = fetchSessionAndSubscribe();
     return () => {
+      clearInterval(intervalId);
       cleanup.then(fn => fn && fn());
     };
   }, []);
@@ -190,6 +197,7 @@ export const MeusPedidos: React.FC = () => {
             <div key={order.id} className="order-card" style={{ borderLeft: `4px solid ${getStatusColor(order.status)}` }}>
               <div className="order-header-info" onClick={() => toggleOrderExpand(order.id)}>
                 <div className="order-main-info">
+                  <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-text)' }}>Pedido #{order.id.slice(0, 5).toUpperCase()}</h4>
                   <div className="order-status-badge" style={{ backgroundColor: `${getStatusColor(order.status)}15`, color: getStatusColor(order.status) }}>
                     {getStatusIcon(order.status)}
                     <span>{order.status}</span>

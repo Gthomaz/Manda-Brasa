@@ -68,6 +68,13 @@ export const Backoffice: React.FC = () => {
 
       if (error) throw error;
       toast.success(`Status atualizado para: ${newStatus}`);
+      
+      // Atualiza o estado local para a tela piscar na mesma hora
+      setOrders(current => 
+        current.map(order => 
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
     } catch (error: any) {
       toast.error('Erro ao atualizar status: ' + error.message);
     }
@@ -114,7 +121,7 @@ export const Backoffice: React.FC = () => {
           orders.map(order => (
             <div key={order.id} className="order-card" style={{ borderTop: `4px solid ${getStatusColor(order.status)}` }}>
               <div className="order-header">
-                <h3>Pedido de {order.customer_name}</h3>
+                <h3>Pedido #{order.id.slice(0, 5).toUpperCase()} - {order.customer_name}</h3>
                 <span className="order-time">{new Date(order.created_at).toLocaleTimeString()}</span>
               </div>
               
