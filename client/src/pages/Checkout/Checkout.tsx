@@ -16,6 +16,7 @@ export const Checkout: React.FC = () => {
   const [ccNumber, setCcNumber] = useState('');
   const [ccExpiry, setCcExpiry] = useState('');
   const [ccCvv, setCcCvv] = useState('');
+  const [cpf, setCpf] = useState('');
   const [pixData, setPixData] = useState<{ qr_code_url: string, qr_code: string, order_id: string } | null>(null);
 
   useEffect(() => {
@@ -118,6 +119,7 @@ export const Checkout: React.FC = () => {
                 cep: profile.address_cep,
                 street: profile.address_street,
                 neighborhood: profile.address_neighborhood,
+                cpf: cpf
               }
             }),
           });
@@ -148,6 +150,7 @@ export const Checkout: React.FC = () => {
                 name: profile.full_name,
                 email: session.user.email,
                 phone: profile.phone,
+                cpf: cpf
               }
             }),
           });
@@ -229,6 +232,19 @@ export const Checkout: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="checkout-section">
+            <h3>3. Dados Fiscais (Obrigatório para PIX)</h3>
+            <input 
+              type="text" 
+              placeholder="Digite seu CPF (Apenas números)" 
+              value={cpf} 
+              onChange={e => setCpf(e.target.value.replace(/\D/g, '').slice(0, 11))} 
+              className="obs-input" 
+              required={paymentMethod === 'Gerar QR Pix' || paymentMethod === 'Cartão Online (Pagar.me)'}
+              style={{ marginTop: '0.5rem', width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #ccc' }}
+            />
           </div>
 
           <button type="submit" className="btn-primary btn-submit-order" disabled={loading}>

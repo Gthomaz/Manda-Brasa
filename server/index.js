@@ -113,7 +113,7 @@ app.post('/api/pagarme', async (req, res) => {
         name: customer.name || 'Cliente Manda Brasa',
         email: customer.email || 'cliente@mandabrasa.com',
         type: 'individual',
-        document: '00000000000',
+        document: customer.cpf || '00000000000',
         phones: {
           mobile_phone: {
             country_code: '55',
