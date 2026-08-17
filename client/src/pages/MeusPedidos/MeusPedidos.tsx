@@ -217,6 +217,41 @@ export const MeusPedidos: React.FC = () => {
 
               {expandedOrder === order.id && (
                 <div className="order-details-expanded">
+                  
+                  {/* Barra de Progresso Visual */}
+                  <div className="order-progress-tracker" style={{ display: 'flex', justifyContent: 'space-between', margin: '1rem 0 2rem 0', position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '15px', left: '12%', right: '12%', height: '4px', backgroundColor: '#e5e7eb', zIndex: 0 }}></div>
+                    <div style={{ 
+                      position: 'absolute', top: '15px', left: '12%', 
+                      width: `${(['Recebido', 'Preparando', 'A Caminho', 'Entregue'].indexOf(order.status) / 3) * 76}%`, 
+                      height: '4px', backgroundColor: '#10B981', zIndex: 0, transition: 'width 0.5s ease' 
+                    }}></div>
+                    
+                    {['Recebido', 'Preparando', 'A Caminho', 'Entregue'].map((s, index) => {
+                      const currentIndex = ['Recebido', 'Preparando', 'A Caminho', 'Entregue'].indexOf(order.status);
+                      const isCompleted = currentIndex >= index;
+                      const isCurrent = currentIndex === index;
+                      return (
+                        <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '25%' }}>
+                          <div style={{ 
+                            width: '34px', height: '34px', borderRadius: '50%', 
+                            backgroundColor: isCompleted ? '#10B981' : '#f3f4f6', 
+                            border: `4px solid ${isCompleted ? '#10B981' : '#e5e7eb'}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'white', fontWeight: 'bold', marginBottom: '0.5rem',
+                            boxShadow: isCurrent ? '0 0 0 4px rgba(16, 185, 129, 0.2)' : 'none',
+                            transition: 'all 0.3s ease'
+                          }}>
+                            {isCompleted ? <CheckCircle size={16} /> : <span style={{ color: '#9ca3af', fontSize: '0.8rem' }}>{index + 1}</span>}
+                          </div>
+                          <span style={{ fontSize: '0.75rem', fontWeight: isCurrent ? 'bold' : 'normal', color: isCurrent ? '#111827' : '#6b7280', textAlign: 'center' }}>
+                            {s}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
                   <div className="order-items-list">
                     <h4>Itens do Pedido</h4>
                     {order.order_items?.map(item => (
