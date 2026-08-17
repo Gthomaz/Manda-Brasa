@@ -54,3 +54,26 @@ jobs:
           npm install
           pm2 restart frango-backend || pm2 start index.js --name "frango-backend"
           pm2 save
+          
+          # Configura o Nginx para apontar para o React (Frontend) e o Node (Backend)
+          sudo tee /etc/nginx/sites-available/frango-na-brasa << 'EOF'
+          server {
+              listen 80;
+              server_name 187.127.44.246;
+              root /var/www/frango-na-brasa/client/dist;
+              index index.html;
+              location / {
+                  try_files $uri $uri/ /index.html;
+              }
+              location /api/ {
+                  proxy_pass http://localhost:3000;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection 'upgrade';
+                  proxy_set_header Host $host;
+                  proxy_cache_bypass $http_upgrade;
+              }
+          }
+          EOF
+          sudo ln -sf /etc/nginx/sites-available/frango-na-brasa /etc/nginx/sites-enabled/
+          sudo systemctl reload nginx
