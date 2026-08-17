@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Package, Clock, Truck, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 import './MeusPedidos.css';
 
 interface OrderItem {
@@ -44,21 +44,35 @@ export const MeusPedidos: React.FC = () => {
             event: 'UPDATE',
             schema: 'public',
             table: 'orders',
-            filter: `user_id=eq.${session.user.id}`
+            // Removendo o filtro no backend para contornar limitações de REPLICA IDENTITY
+            // O filtro será feito puramente no frontend abaixo
           },
           (payload) => {
             const updatedOrder = payload.new as Order;
-            setOrders(currentOrders => 
-              currentOrders.map(order => 
-                order.id === updatedOrder.id ? { ...order, status: updatedOrder.status } : order
-              )
-            );
             
-            // Play notification sound
-            playNotificationSound();
-            toast(`O status do seu pedido mudou para: ${updatedOrder.status}`, {
-              icon: '🔔',
-              duration: 5000,
+            setOrders(currentOrders => {
+              // Verifica se o pedido atualizado pertence a este cliente
+              const isMyOrder = currentOrders.some(order => order.id === updatedOrder.id);
+              
+              if (isMyOrder) {
+                // É um pedido desse cliente! 
+                // Usamos setTimeout para disparar o toast/som fora do ciclo de renderização
+                setTimeout(() => {
+                  playNotificationSound();
+                  toast(`O status do seu pedido mudou para: ${updatedOrder.status}`, {
+                    icon: '🔔',
+                    duration: 5000,
+                  });
+                }, 100);
+
+                // Atualiza o estado
+                return currentOrders.map(order => 
+                  order.id === updatedOrder.id ? { ...order, status: updatedOrder.status } : order
+                );
+              }
+              
+              // Se não for pedido deste cliente, ignora a atualização
+              return currentOrders;
             });
           }
         )
@@ -226,6 +240,19 @@ export const MeusPedidos: React.FC = () => {
                     {order.status === 'A Caminho' && (
                       <p className="status-hint">O entregador já saiu. Fique atento no seu endereço!</p>
                     )}
+
+                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                      <a 
+                        href={`https://wa.me/5500000000000?text=Olá, sou cliente e meu pedido é o #${order.id.slice(0,6).toUpperCase()}. Gostaria de tirar uma dúvida!`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-whatsapp"
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: '#25D366', color: 'white', padding: '0.75rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 'bold' }}
+                      >
+                        <MessageCircle size={20} />
+                        Falar no WhatsApp
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
