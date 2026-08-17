@@ -32,10 +32,10 @@ export const MeusPedidos: React.FC = () => {
   useEffect(() => {
     fetchOrders();
     
-    // Polling a cada 10 segundos como plano B imbatível
+    // Polling ultrarrápido a cada 3 segundos
     const intervalId = setInterval(() => {
       fetchOrders();
-    }, 10000);
+    }, 3000);
 
     const fetchSessionAndSubscribe = async () => {
       const { data: { session } } = await supabase.auth.getSession();
