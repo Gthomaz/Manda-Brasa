@@ -243,7 +243,7 @@ export const MeusPedidos: React.FC = () => {
 
                     <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
                       <a 
-                        href={`https://wa.me/5500000000000?text=Olá, sou cliente e meu pedido é o #${order.id.slice(0,6).toUpperCase()}. Gostaria de tirar uma dúvida!`}
+                        href={`https://wa.me/5522999913635?text=Olá, sou cliente e meu pedido é o #${order.id.slice(0,6).toUpperCase()}. Gostaria de tirar uma dúvida!`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-whatsapp"
